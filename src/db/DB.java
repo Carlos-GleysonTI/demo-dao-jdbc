@@ -13,6 +13,7 @@ public class DB {
 
 	private static Connection conn = null;
 	
+	//crio minha conexão
 	public static Connection getConnection() {
 		if (conn == null) {
 			try {
@@ -27,6 +28,7 @@ public class DB {
 		return conn;
 	}
 	
+	//fechar coneão
 	public static void closeConnection() {
 		if (conn != null) {
 			try {
@@ -41,7 +43,7 @@ public class DB {
 	private static Properties loadProperties() {
 		try (FileInputStream fs = new FileInputStream("db.properties")) {
 			Properties props = new Properties();
-			props.load(fs);
+			props.load(fs);//aqui ele ler
 			return props;
 		}
 		catch (IOException e) {
@@ -49,6 +51,7 @@ public class DB {
 		}
 	}
 	
+	//fechar 
 	public static void closeStatement(Statement st) {
 		if (st != null) {
 			try {
@@ -59,6 +62,7 @@ public class DB {
 		}
 	}
 
+	//fechar
 	public static void closeResultSet(ResultSet rs) {
 		if (rs != null) {
 			try {
