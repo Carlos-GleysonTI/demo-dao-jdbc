@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.DB;
 import db.DbException;
@@ -41,6 +44,7 @@ public class SellerDaoJDBC implements SellerDao{
 		
 	}
 
+	//metodo p buscar pelo ID 
 	@Override
 	public Seller findById(Integer id) {
 		//findById(encontrar por id)
@@ -84,7 +88,7 @@ public class SellerDaoJDBC implements SellerDao{
 		}
 	}
 
-	//Metodo Seller(Cliente) com atributos do banco e associado c Dep
+	//Função Seller(Cliente) com atributos do banco e associado c Dep
 	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
 
 		//tem q ficar igual esta no banco
@@ -98,7 +102,7 @@ public class SellerDaoJDBC implements SellerDao{
 		return obj;
 	}
 
-	//Metodo Department com atributos do banco
+	//Função Department com atributos do banco
 	private Department instantiateDepartment(ResultSet rs) throws SQLException {
 		
 		//tem q ficar igual esta no banco os campos dos atributos
@@ -115,4 +119,61 @@ public class SellerDaoJDBC implements SellerDao{
 		return null;
 	}
 
+	//metodo p buscar pelo name do  Department em ordem alfabetica
+	@Override
+	public List<Seller> findByDepartment(Department department) {
+		
+		PreparedStatement st = null;
+		ResultSet rs = null; //traz em formato de tabelas
+		
+		try{
+			st = conn.prepareStatement(
+					"SELECT seller.*,department.Name as DepName "
+					+ "FROM seller INNER JOIN department "
+					+ "ON seller.DepartmentId = department.Id "
+					+ "WHERE DepartmentId = ? "
+					+ "ORDER BY Name");
+			
+			st.setInt(1, department.getId());
+			
+			//traz as informa do banco
+			rs = st.executeQuery();
+			
+			//minha lista de clientes
+			List<Seller> list = new ArrayList<>();
+			
+			//vamos armarzenar um id dep dentro map p verificar se ja tem um igual
+			Map<Integer, Department> map = new HashMap<>();
+			
+			//vai traz em lista e ordem temos q usar while para percorrer
+			while(rs.next()) {
+				
+				// aqui eu armazendo o id do depar dentro map para poder verifi
+				Department dep = map.get(rs.getInt("DepartmentId"));
+				
+				if(dep == null) {
+					//função com campos do DATABASE 
+					dep = instantiateDepartment(rs);
+					map.put(rs.getInt("DepartmentId"), dep);
+				}
+				
+				//pq tem uma associação com department
+				Seller obj = instantiateSeller(rs,dep);
+				list.add(obj);
+				
+			}
+			
+			return list;
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		
+		//tenhos fechar meus recursos
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+
+	}
 }
