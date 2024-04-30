@@ -113,10 +113,60 @@ public class SellerDaoJDBC implements SellerDao{
 		return dep;
 	}
 
+	//findAll() - encontrar tudo
 	@Override
 	public List<Seller> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+
+		PreparedStatement st = null;
+		ResultSet rs = null; //traz em formato de tabelas
+		
+		try{
+			st = conn.prepareStatement(
+					"SELECT seller.*,department.Name as DepName "
+					+ "FROM seller INNER JOIN department "
+					+ "ON seller.DepartmentId = department.Id "
+					+ "ORDER BY Name");
+			
+			//st.setInt(1, department.getId()); //ñ preci pq não usei ? no SQL
+			
+			//traz as informa do banco
+			rs = st.executeQuery();
+			
+			//minha lista de clientes
+			List<Seller> list = new ArrayList<>();
+			
+			//vamos armarzenar um id dep dentro map p verificar se ja tem um igual
+			Map<Integer, Department> map = new HashMap<>();
+			
+			//vai traz em lista e ordem temos q usar while para percorrer
+			while(rs.next()) {
+				
+				// aqui eu armazendo o id do depar dentro map para poder verifi
+				Department dep = map.get(rs.getInt("DepartmentId"));
+				
+				if(dep == null) {
+					//função com campos do DATABASE 
+					dep = instantiateDepartment(rs);
+					map.put(rs.getInt("DepartmentId"), dep);
+				}
+				
+				//pq tem uma associação com department
+				Seller obj = instantiateSeller(rs,dep);
+				list.add(obj);
+				
+			}
+			
+			return list;
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		
+		//tenhos fechar meus recursos
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	//metodo p buscar pelo name do  Department em ordem alfabetica

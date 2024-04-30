@@ -25,6 +25,14 @@ public class Progam {
 			System.out.println(obj);
 		}
 		
+		System.out.println("\n==== TEST 3: Seller(Clinte) findAll(traz td) ====");
+		list = sellerDao.findAll();//usando a mesma lista de cima por isso ñ prec instanciar
+		//vamos pecorrer a lista
+		for(Seller obj: list) {
+			System.out.println(obj);
+		}
+		
+		
 	}
 
 }
