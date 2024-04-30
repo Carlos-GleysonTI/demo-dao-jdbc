@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +27,51 @@ public class SellerDaoJDBC implements SellerDao{
 		this.conn = conn;//ja ta conectado
 	}
 	
+	//metodo p inserir no banco de dados via aplicação
 	@Override
 	public void insert(Seller obj) {
-		// TODO Auto-generated method stub
+		
+		PreparedStatement st = null;
+		
+		try {
+			
+			st = conn.prepareStatement(
+					"INSERT INTO seller "
+					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId) "  
+					+ "VALUES " 
+					+ "(?, ?, ?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);//vamos retornar o id "RETURN_GENERATED_KEYS"
+			
+			//vamos configurar as ????
+			st.setString(1, obj.getName());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));//tenho q instanciar pacate de Data
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
+			
+			//vamos executar a query mostrando numero de linhaa afetadas
+			int rowsAffected = st.executeUpdate(); //executeUpdate() executa a query
+			
+			// se n° linha for > 0 indica q inseriu
+			if(rowsAffected > 0) {
+				ResultSet rs = st.getGeneratedKeys();
+				if(rs.next()) {
+					int id = rs.getInt(1);//gerado
+					obj.setId(id);
+				}
+				//so posso fechar ele dentro if RS pq ele nao ta fora do TRY
+				DB.closeResultSet(rs);
+			}
+			else {
+				throw new DbException("Unexpected error! no lines affected! ");
+			}
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+		}
 		
 	}
 
@@ -113,7 +156,7 @@ public class SellerDaoJDBC implements SellerDao{
 		return dep;
 	}
 
-	//findAll() - encontrar tudo
+	//findAll() - buscar tudo
 	@Override
 	public List<Seller> findAll() {
 
