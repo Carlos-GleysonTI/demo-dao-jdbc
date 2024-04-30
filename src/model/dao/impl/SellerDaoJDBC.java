@@ -61,19 +61,14 @@ public class SellerDaoJDBC implements SellerDao{
 			
 			if(rs.next()) {
 				
-				Department dep = new Department();
-				dep.setId(rs.getInt("DepartmentId"));//tem q ficar igual esta no banco
-				dep.setName(rs.getString("DepName"));//"as DepName" criada la no select
+				//função com campos do DATABASE 
+				Department dep = instantiateDepartment(rs);
+				//pq tem uma associação com department
+				Seller obj = instantiateSeller(rs,dep);
 				
-				Seller obj = new Seller();
-				obj.setId(rs.getInt("Id"));//tem q ficar igual esta no banco
-				obj.setName(rs.getString("Name"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBaseSalary(rs.getDouble("BaseSalary"));
-				obj.setBirthDate(rs.getDate("BirthDate"));
-				obj.setDepartment(dep);//pq tem uma associação com department
-				
-				return obj;//pq obj pq estamos fazendo uma busca pelo id do Seller(Cliente) e Dep e so assoação
+				return obj;
+				//pq obj pq estamos fazendo uma busca pelo 
+				//id do Seller(Cliente) e Dep e so assoação
 			}
 			
 			return null;
@@ -87,6 +82,31 @@ public class SellerDaoJDBC implements SellerDao{
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
+	}
+
+	//Metodo Seller(Cliente) com atributos do banco e associado c Dep
+	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
+
+		//tem q ficar igual esta no banco
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setDepartment(dep);
+		return obj;
+	}
+
+	//Metodo Department com atributos do banco
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		
+		//tem q ficar igual esta no banco os campos dos atributos
+		
+		Department dep = new Department();
+		dep.setId(rs.getInt("DepartmentId"));
+		dep.setName(rs.getString("DepName"));
+		return dep;
 	}
 
 	@Override
