@@ -75,9 +75,37 @@ public class SellerDaoJDBC implements SellerDao{
 		
 	}
 
+	//atualizar dados do banco
 	@Override
 	public void update(Seller obj) {
-		// TODO Auto-generated method stub
+		
+		PreparedStatement st = null;
+		
+		try {
+			
+			st = conn.prepareStatement(
+					"UPDATE seller " 
+					+ "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, "
+					+ "DepartmentId = ? "  
+					+ " WHERE Id = ?");//vamos retornar o id "RETURN_GENERATED_KEYS"
+			
+			//vamos configurar as ????
+			st.setString(1, obj.getName());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));//tenho q instanciar pacate de Data
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
+			st.setInt(6, obj.getId());//id o vendedor;
+			
+			st.executeUpdate(); //executeUpdate() executa a query
+			
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+		}
 		
 	}
 

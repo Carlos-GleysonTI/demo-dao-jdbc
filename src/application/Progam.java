@@ -39,6 +39,12 @@ public class Progam {
 		sellerDao.insert(newSeller);
 		System.out.println("Inserted! New id = " + newSeller.getId());
 		
+		System.out.println("\n==== TEST 5: Seller(Clinte) update(Atualizar) ====");
+		seller = sellerDao.findById(1);//reauproveitar meu Seller ja instanciado em cima/ minha lista de do id 1
+		seller.setName("Martha Waine");// vou altarar a penas no nome do id = 1
+		sellerDao.update(seller);//chamo a metodo p atulizar
+		System.out.println("Update completed! ");
+		
 	}
 
 }
