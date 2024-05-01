@@ -27,6 +27,11 @@ public class Progam2 {
 			System.out.println(d);
 		}
 		
+		System.out.println("\n=== TEST 3: insert =======");
+		Department newDepartment = new Department(null, "Music");//null e o id autocrementado
+		departmentDao.insert(newDepartment);//funçao inserir
+		System.out.println("Inserted! New id: " + newDepartment.getId());
+		
 		sc.close();
 	}
 }
