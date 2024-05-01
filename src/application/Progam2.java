@@ -32,6 +32,12 @@ public class Progam2 {
 		departmentDao.insert(newDepartment);//funçao inserir
 		System.out.println("Inserted! New id: " + newDepartment.getId());
 		
+		System.out.println("\n=== TEST 4: update =======");
+		Department dep2 = departmentDao.findById(1);//vamos atulizar o id  = 1
+		dep2.setName("Food");//vai ser agora Food
+		departmentDao.update(dep2);
+		System.out.println("Update completed");
+		
 		sc.close();
 	}
 }
